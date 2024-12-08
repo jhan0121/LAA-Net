@@ -306,7 +306,7 @@ class SBIFaceForensic(MasterDataset):
         return batch_data
     
     def train_worker_init_fn(self, worker_id):
-        # print('Current state {} --- worker id {}'.format(np.random.get_state()[1][0], worker_id))
+        print('Current state {} --- worker id {}'.format(np.random.get_state()[1][0], worker_id))
         np.random.seed(np.random.get_state()[1][0] + worker_id)
 
 

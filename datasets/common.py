@@ -52,7 +52,8 @@ class CommonDataset(Dataset, ABC):
         @split: train/val
         This function for loading data from file for 4 types of manipulated images FF++ and FaceXray generation data
         """
-        assert os.path.exists(self._cfg.DATA[self.split.upper()].ROOT), "Root path to dataset can not be invalid!"
+        print(self._cfg.DATA[self.split.upper()].ROOT)
+        assert os.path.exists('.' + self._cfg.DATA[self.split.upper()].ROOT), "Root path to dataset can not be invalid!"
         data_cfg = self._cfg.DATA
         
         if anno_file is None:

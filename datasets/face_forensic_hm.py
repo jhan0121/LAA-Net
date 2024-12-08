@@ -57,6 +57,11 @@ class HeatmapFaceForensic(MasterDataset):
         self.geo_transform = build_pipeline(config.TRANSFORM.geometry, PIPELINES)
         self.colorjitter_transform = build_pipeline(config.TRANSFORM.color, PIPELINES)
 
+    ###
+    def train_worker_init_fn(self, worker_id):
+        np.random.seed(worker_id)
+        torch.manual_seed(worker_id)
+
     def _load_data(self, split):
         from_file = self._cfg.DATA[self.split.upper()].FROM_FILE
         
@@ -161,7 +166,7 @@ class HeatmapFaceForensic(MasterDataset):
     def __getitem__(self, idx):
         flag = True
         while flag:
-            try:
+            # try:
                 img_path = self.image_paths[idx]
                 label = self.labels[idx]
                 vid_id = img_path.split('/')[-2]
@@ -183,7 +188,8 @@ class HeatmapFaceForensic(MasterDataset):
                         mask = load_image(mask_path)
                 else:
                     if self.train:
-                        best_match = self.ot_props[idx]['best_match'] if len(self.ot_props[idx]['best_match']) else []
+                        # best_match = self.ot_props[idx]['best_match'] if len(self.ot_props[idx]['best_match']) else []
+                        best_match = self.ot_props[idx]['best_match'] if self.ot_props[idx].get('best_match') else []
                         if len(self.ot_props[idx]['aligned_lms']):
                             f_lms = self.ot_props[idx]['aligned_lms']
                         elif len(self.ot_props[idx]['orig_lms']):
@@ -275,9 +281,9 @@ class HeatmapFaceForensic(MasterDataset):
                     img_trans = self.final_transforms(img_trans)
                     label = np.expand_dims(label, axis=-1)
                 flag = False
-            except Exception as e:
-                print('There is an exception during loading data, please check --- ', e)
-                idx=torch.randint(low=0, high=self.__len__(), size=(1,)).item()
+            # except Exception as e:
+            #     print('There is an exception during loading data, please check --- ', e)
+            #     idx=torch.randint(low=0, high=self.__len__(), size=(1,)).item()
         
         if self.train:
             return patch_img_trans, patch_label, patch_target, patch_heatmap, patch_cstency_hm

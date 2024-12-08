@@ -74,6 +74,7 @@ class LandmarkUtility(object):
         Currenly, Using Glob for loading file with regex
         It might be changed for better performance in large datasets
         """
+        print(self.image_root)
         assert os.path.exists(self.image_root), "Root path to dataset can not be None!"
         data_type = self.data_type
         fake_types = self.fake_types

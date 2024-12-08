@@ -25,22 +25,33 @@ DATASET:
       TEST: 32
     TRAIN:
       NAME: FF++ # This field to define datasets that can be used to train/in-dataset/cross-dataset evaluation
-      ROOT: /home/users/<user>/data/FaceForensics++/c0/
-      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      # ROOT: /home/users/<user>/data/FaceForensics++/c0/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c23/
+      # ROOT: /content/drive/MyDrive/LAA-Net/data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
       FROM_FILE: True
-      FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      FAKETYPE: [Original]
       # ANNO_FILE: train/frames/FaceXRay/train_FF_FaceXRay.json
-      ANNO_FILE: processed_data/c0/dynamic_trainBI_FFv2.json
+      # ANNO_FILE: processed_data/c0/dynamic_trainBI_FFv2.json
+      ANNO_FILE: processed_data/c0/dynamic_trainBI_FFv4.json
       LABEL_FOLDER: [real, fake]
     VAL:
       NAME: FF++ # This field to define datasets that can be used to train/in-dataset/cross-dataset evaluation
-      ROOT: /home/users/<user>/data/FaceForensics++/c0/
+      # ROOT: /home/users/<user>/data/FaceForensics++/c23/
+      # ROOT: /content/drive/MyDrive/LAA-Net/data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
       FROM_FILE: True
-      FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures] # Choosing Deepfake techniques to be loaded for dataloader
+      # FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures] # Choosing Deepfake techniques to be loaded for dataloader
+      FAKETYPE: [Original]
       # ANNO_FILE: val/frames/FaceXRay/val_FF_FaceXRay.json
-      ANNO_FILE: processed_data/c0/dynamic_valBI_FFv2.json
+      # ANNO_FILE: processed_data/c0/dynamic_valBI_FFv2.json
+      # ANNO_FILE: processed_data/c0/val_FaceForensics_Original_81.json
+      ANNO_FILE: processed_data/c0/dynamic_valBI_FFv4.json
       LABEL_FOLDER: [real, fake]
     TEST:
+      # NAME: Celeb-DFv2
+      # NAME: FF++
       NAME: DFW
       # ROOT: /home/users/<user>/data/FaceForensics++/c0/
       # ROOT: /home/users/<user>/data/Celeb-DFv1/
@@ -49,16 +60,23 @@ DATASET:
       # ROOT: /home/users/<user>/data/DFDCP/
       # ROOT: /home/users/<user>/data/DFDC/
       # ROOT: /home/users/<user>/data/DFD/
-      ROOT: /home/users/<user>/data/DFW/
+      # ROOT: /home/users/<user>/data/DFW/
+      # ROOT: ./data/deepfake_cluster/datasets_df/Celeb-DFv2/c0/
+      # ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      ROOT: ./data/deepfake_cluster/datasets_df/DFW/
       FROM_FILE: False
       # FAKETYPE: [original, Deepfakes]
-      # FAKETYPE: [original, Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # FAKETYPE: [Original, Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+      # FAKETYPE: [Original]
       # FAKETYPE: [Celeb-real, Celeb-synthesis, YouTube-real]
       # FAKETYPE: [method_A, method_B, original_videos]
       # FAKETYPE: [fake, real]
       # FAKETYPE: [DeepFakeDetection_original, DeepFakeDetection]
       FAKETYPE: [real_test, fake_test]
-      ANNO_FILE: FaceXRay/test/test_FF_Xray.json
+      # ANNO_FILE: FaceXRay/test/test_FF_Xray.json
+      # ANNO_FILE: processed_data/c0/test_Celeb-DFv2_Celeb-real_81.json
+      # ANNO_FILE: processed_data/c0/test_FaceForensics_Original_81.json
+      ANNO_FILE: processed_data/c0/dynamic_testBI_FFv4.json
       LABEL_FOLDER: [real, fake]
   TRANSFORM:
     geometry:
@@ -109,11 +127,13 @@ MODEL:
     advprop: True
 TRAIN:
   gpus: [0]
-  batch_size: 16
+  batch_size: 4
   lr: 0.00005
-  epochs: 100
+  epochs: 5
+  # epochs: 100
   begin_epoch: -1
-  warm_up: 6
+  warm_up: 1
+  # warm_up: 6
   every_val_epochs: 1
   loss:
     type: CombinedFocalLoss
@@ -147,14 +167,17 @@ TEST:
   threshold: 0.5
   flip_test: True
   video_level: True
-  pretrained: 'logs/24-05-2023/PoseEfficientNet_EFN_hm100_FPN_NoBasedCLS_Focal_C3_256Cstency100_32FXRayv2_SAM(Adam)_ADV_Erasing1_OutSigmoid_model_best.pth'
+  # pretrained: 'logs/24-05-2023/PoseEfficientNet_EFN_hm100_FPN_NoBasedCLS_Focal_C3_256Cstency100_32FXRayv2_SAM(Adam)_ADV_Erasing1_OutSigmoid_model_best.pth'
+  # pretrained: 'pretrained/PoseEfficientNet_EFN_hm10_EFPN_NoBasedCLS_Focal_C3_256Cst100_8SBI_SAM(Adam)_ADV_Era1_OutSigmoid_1e7_boost500_UnFZ_model_best.pth'
+  pretrained: 'logs/24-11-2024/PoseEfficientNet_EFN_hm10_EFPN_NoBasedCLS_Focal_C2_256Cst100_32FXRayv2_SAM(Adam)_ADV_Era3_OutSoftMax_5e5_div4_FZ_model_best.pth'
 PREPROCESSING:
-  DATASET: FaceForensics
+  DATASET: FaceForensics++
   SPLIT: train
-  ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c23/
-  FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures]
-  IMAGE_SUFFIX: jpg
-  DATA_TYPE: images
+  ROOT: /data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+  # FAKETYPE: [Deepfakes, Face2Face, FaceSwap, NeuralTextures]
+  FAKETYPE: [Original]
+  IMAGE_SUFFIX: png
+  DATA_TYPE: frames
   LABEL: [real, fake]
   facial_lm_pretrained: pretrained/shape_predictor_68_face_landmarks.dat
   DEBUG: False

@@ -15,7 +15,7 @@ from retinaface.utils import vis_annotations
 import torch
 
 
-ROOT = '/data/deepfake_cluster/datasets_df'
+ROOT = './data/deepfake_cluster/datasets_df'
 SAVE_DIR = f'{ROOT}/FaceForensics++/c0'
 IMAGE_H, IMAGE_W, IMAGE_C = 256, 256, 3
 PADDING = 0.25

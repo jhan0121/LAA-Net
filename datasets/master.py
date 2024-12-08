@@ -16,6 +16,7 @@ class MasterDataset(CDFV1, FF, DFDCP, CDFV2, DFDC, DFD, DFW):
     
     def _load_from_path(self, split):
         # Explicitly overide some main methods from the dataset config
+        print(self.dataset, split)
         if self.dataset == 'FF++':
             return MasterDataset.__mro__[2]._load_from_path(self, split=split)
         elif self.dataset == 'Celeb-DFv1':

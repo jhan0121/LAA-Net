@@ -14,6 +14,7 @@ class FF(CommonDataset):
         super().__init__(cfg, **kwargs)
 
     def _load_from_path(self, split):
+        print(self._cfg.DATA[self.split.upper()].ROOT)
         assert os.path.exists(self._cfg.DATA[self.split.upper()].ROOT), "Root path to dataset can not be None!"
         data = self._cfg["DATA"]
         data_type = data.TYPE

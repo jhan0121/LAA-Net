@@ -1,0 +1,12 @@
+/data
+__pycache__
+.ipynb_checkpoints
+.tensorboard
+desktop.ini
+/log
+/pretrained
+/processed_data
+output_pred.jpg
+temp.py
+*.log
+*.pth
