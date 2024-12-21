@@ -1,35 +1,16 @@
 # LAA-Net: Localized Artifact Attention Network for Quality-Agnostic and Generalizable Deepfake Detection
 
+## LAA-Net 논문 기반 개선 아이디어 적용 model
+
+## 기존 LAA-Net
 ![alt text](./demo/laa_net.png?raw=true)
 This is an official implementation for LAA-Net! [[Paper](https://arxiv.org/pdf/2401.13856.pdf)]
 
-
-## Updates
-
-- [x] Released pretrained weights
-- [x] 26/02/2024: *LAA-Net has been accepted in CVPR2024.*
-- [x] 15/11/2023: *First version pre-released for this open source code.*
-
-## Abstract
-This paper introduces a novel approach for high-quality deepfake detection called Localized Artifact Attention Network (LAA-Net).  Existing methods for high-quality deepfake detection are mainly based on a supervised binary classifier coupled with an implicit attention mechanism. As a result, they do not generalize well to unseen manipulations. To handle this issue, two main contributions are made. First, an explicit attention mechanism within a multi-task learning framework is proposed. By combining heatmap-based and self-consistency attention strategies, LAA-Net is forced to focus on a few small artifact-prone regions. Second, an Enhanced Feature Pyramid Network (E-FPN) is suggested as a simple and effective mechanism for spreading discriminative low-level features into the final feature output, with the advantage of limiting redundancy. Experiments performed on several benchmarks show the superiority of our approach in terms of Area Under the Curve (AUC) and Average Precision (AP).
-
-
-## Main Results
-Results on [FF++](https://github.com/ondyari/FaceForensics) in-dataset evaluation and 4 datasets ([CDF](https://github.com/yuezunli/celeb-deepfakeforensics), [DFW](https://github.com/deepfakeinthewild/deepfake-in-the-wild), [DFD](https://blog.research.google/2019/09/contributing-data-to-deepfake-detection.html), [DFDC](https://ai.meta.com/datasets/dfdc/)) under cross-dataset evaluation setting reported by AP and AUC.
 
 |LAA-Net | FF++ |  CDF  |    DFW     |     DFD    |     DFDC   |
 |--------|------|-------|------------|------------|------------|
 |w/ BI|<table><thead><tr><th>AUC</th></tr></thead><tbody><tr><td>99.95</td></tr></tbody></table>|<table><thead><tr><th>AUC</th><th>AP</th></tr></thead><tbody><tr><td>86.28</td><td>91.93</td></tr></tbody></table>|<table><thead><tr><th>AUC</th><th>AP</th></tr></thead><tbody><tr><td>57.13</td><td>56.89</td></tr></tbody></table>|<table><thead><tr><th>AUC</th><th>AP</th></tr></thead><tbody><tr><td>99.51</td><td>99.80</td></tr></tbody></table>|<table><thead><tr><th>AUC</th><th>AP</th></tr></thead><tbody><tr><td>69.69</td><td>93.67</td></tr></tbody></table>|
 |w/ SBI|<table><thead><tr><th>AUC</th></tr></thead><tbody><tr><td>99.96</td></tr></tbody></table>|<table><thead><tr><th>AUC</th><th>AP</th></tr></thead><tbody><tr><td>95.40</td><td>97.64</td></tr></tbody></table>|<table><thead><tr><th>AUC</th><th>AP</th></tr></thead><tbody><tr><td>80.03</td><td>81.08</td></tr></tbody></table>|<table><thead><tr><th>AUC</th><th>AP</th></tr></thead><tbody><tr><td>98.43</td><td>99.40</td></tr></tbody></table>|<table><thead><tr><th>AUC</th><th>AP</th></tr></thead><tbody><tr><td>86.94</td><td>97.70</td></tr></tbody></table>|
-<!-- |-----|AP|AR|F1|AUC|AP|AR|F1|AUC|AP|AR|F1|AUC|AP|AR|F1|AUC| -->
-<!-- |-----|--|--|--|---|--|--|--|---|--|--|--|---|--|--|--|---| -->
-<!-- |ResN+E-FPN| | | | | | | | | | | | | | | | | -->
-<!-- |EFNB4+E-FPN| | | | | | | | | | | | | | | | | -->
-
-<!-- |AP|AR|F1|AUC|
-|--|--|--|---|
-| | | | | -->
-
 
 ## Recommended Environment
 *For experiment purposes, we encourage the installment of the following libraries. Both Conda or Python virtual env should work.*
@@ -46,24 +27,6 @@ Results on [FF++](https://github.com/ondyari/FaceForensics) in-dataset evaluatio
 
 ## LAA-Net Pre-trained Models
 * 📌 *The pre-trained weights of using BI and SBI can be found [here](https://www.dropbox.com/scl/fo/dzmldaytujdeuky69d5x1/AIJrH2mit1hxnl1qzavM3vk?rlkey=nzzliincrfwejw2yr0ovldru1&st=z8ds7il7&dl=0)!*
-
-
-## Docker Build (Optional)
-*We further provide an optional Docker file that can be used to build a working env with Docker. More detailed steps can be found [here](dockerfiles/README.md).*
-
-1.  Install docker to the system (postpone this step if docker has already been installed):
-    ```shell
-    sudo apt install docker
-    ```
-2. To start your docker environment go to the folder *dockerfiles*:
-   ```shell
-   cd dockerfiles
-   ```
-3. Create a docker image (you can put any name you want):
-    ```shell
-    docker build --tag 'laa_net' .
-    ```
-
 
 ## Quickstart
 1. **Preparation**
@@ -176,8 +139,25 @@ Results on [FF++](https://github.com/ondyari/FaceForensics) in-dataset evaluatio
     > ℹ️ *The mode for single image inference is also provided, please set ```sub_task: test_image``` and pass an image path as an argument in test.py*
 
 
-## Contact
-Please contact dat.nguyen@uni.lu. Any questions or discussions are welcomed!
+## model 개선 아이디어
+
+1. **취약점 탐지 알고리즘 개선**
+
+edge 검출에 이용되는 필터 중 하나인 Laplacian filter 연산을 이용하여 Heatmap에서 보다 정확한 취약 픽셀 탐지 가능성을 향상
+
+<div align="center">
+  <img src="./img/blend.png" alt="취약점 탐지 알고리즘">
+</div>
+
+***
+
+2. **Heatmap 계산 알고리즘 개선**
+
+단일 sigma가 아닌 다중 sigma를 이용한 계산 결과에 가중치를 곱한 값을 더하여 작은 sigma는 경계의 세밀한 부분을 강조하고 큰 sigma는 더 넓은 블렌딩 영역을 커버
+
+<div align="center">
+  <img src="./img/heatmap.png" alt="Heatmap 계산 알고리즘">
+</div>
 
 
 ## Acknowledge
