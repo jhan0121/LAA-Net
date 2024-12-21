@@ -10,3 +10,5 @@ output_pred.jpg
 temp.py
 *.log
 *.pth
+*.jpg
+*.png
