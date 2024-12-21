@@ -3,9 +3,9 @@ PREPROCESSING:
   # DATASET: DFW
   DATASET: FaceForensics
   COMPRESSION: c0
-  # SPLIT: train
+  SPLIT: train
   # SPLIT: val
-  SPLIT: test
+  # SPLIT: test
   # ROOT: /mnt/g/내 드라이브/LAA-Net/data/deepfake_cluster/datasets_df/Celeb-DFv2/c0/
   # ROOT: /content/drive/MyDrive/LAA-Net/data/deepfake_cluster/datasets_df/FaceForensics++/c0/
   ROOT: /mnt/g/내 드라이브/LAA-Net/data/deepfake_cluster/datasets_df/FaceForensics++/c0/
@@ -19,10 +19,10 @@ PREPROCESSING:
   IMAGE_SUFFIX: png
   DATA_TYPE: frames
   LABEL: [real]
-  # facial_lm_pretrained: pretrained/shape_predictor_81_face_landmarks.dat
-  facial_lm_pretrained: pretrained/shape_predictor_68_face_landmarks.dat
-  # N_LANDMARKS: 81
-  N_LANDMARKS: 68
+  facial_lm_pretrained: pretrained/shape_predictor_81_face_landmarks.dat
+  # facial_lm_pretrained: pretrained/shape_predictor_68_face_landmarks.dat
+  N_LANDMARKS: 81
+  # N_LANDMARKS: 68
   SAMPLING:
     ACTIVE: False
     NUMBERS: 8

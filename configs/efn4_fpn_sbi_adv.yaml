@@ -5,7 +5,7 @@ SEED: 317
 DATA_RELOAD: True
 DATASET:
   type: HeatmapFaceForensic
-  TRAIN: True #Switch to True for training mode, False for testing mode
+  TRAIN: False #Switch to True for training mode, False for testing mode
   COMPRESSION: c0
   IMAGE_SUFFIX: png
   NUM_WORKERS: 7
@@ -63,8 +63,10 @@ DATASET:
       # ROOT: /content/drive/MyDrive/LAA-Net/data/deepfake_cluster/datasets_df/DFW/
       # ROOT: /mnt/g/내 드라이브/LAA-Net/data/deepfake_cluster/datasets_df/Celeb-DFv2/c0/
       # ROOT: /mnt/g/내 드라이브/LAA-Net/data/deepfake_cluster/datasets_df/DFW/
-      ROOT: /mnt/g/내 드라이브/LAA-Net/data/deepfake_cluster/datasets_df/FaceForensics++/c0/
-      # ROOT: /data/deepfake_cluster/datasets_df/Celeb-DFv2/c0/
+      # ROOT: /mnt/g/내 드라이브/LAA-Net/data/deepfake_cluster/datasets_df/FaceForensics++/c0/
+      # ROOT: ./data/deepfake_cluster/datasets_df/Celeb-DFv2/c0/
+      # ROOT: ./data/deepfake_cluster/datasets_df/DFW/
+      ROOT: ./data/deepfake_cluster/datasets_df/FaceForensics++/c0/
       FROM_FILE: False
       # FAKETYPE: [original, Deepfakes]
       FAKETYPE: [Original, Deepfakes, Face2Face, FaceSwap, NeuralTextures]
@@ -125,12 +127,11 @@ MODEL:
 TRAIN:
   gpus: [0]
   # batch_size: 16
-  batch_size: 4
+  batch_size: 1
   lr: 0.00005
   epochs: 5
   # epochs: 100
   begin_epoch: -1
-  warm_up: 6
   warm_up: 6
   every_val_epochs: 1
   loss:
@@ -160,6 +161,7 @@ TRAIN:
 TEST:
   gpus: [0]
   subtask: 'eval'
+  # subtask: 'test_img'
   test_file: ''
   vis_hm: True
   threshold: 0.5
@@ -168,7 +170,8 @@ TEST:
   # pretrained: 'logs/24-05-2023/PoseEfficientNet_EFN_hm100_FPN_NoBasedCLS_Focal_C3_256Cstency100_32FXRayv2_SAM(Adam)_ADV_Erasing1_OutSigmoid_model_best.pth'
   # pretrained: 'pretrained/PoseEfficientNet_EFN_hm10_EFPN_NoBasedCLS_Focal_C3_256Cst100_8SBI_SAM(Adam)_ADV_Era1_OutSigmoid_1e7_boost500_UnFZ_model_best.pth'
   # pretrained: 'logs/17-11-2024/PoseEfficientNet_EFN_hm10_EFPN_NoBasedCLS_Focal_C2_256Cst100_32FXRayv2_SAM(Adam)_ADV_Era3_OutSoftMax_5e5_div4_FZ_model_best.pth'
-  pretrained: 'logs/19-11-2024/PoseEfficientNet_EFN_hm10_EFPN_NoBasedCLS_Focal_C2_256Cst100_32FXRayv2_SAM(Adam)_ADV_Era3_OutSoftMax_5e5_div4_FZ_model_best.pth'
+  # pretrained: 'logs/19-11-2024/PoseEfficientNet_EFN_hm10_EFPN_NoBasedCLS_Focal_C2_256Cst100_32FXRayv2_SAM(Adam)_ADV_Era3_OutSoftMax_5e5_div4_FZ_model_best.pth'
+  pretrained: 'logs/18-12-2024/PoseEfficientNet_EFN_hm10_EFPN_NoBasedCLS_Focal_C2_256Cst100_32FXRayv2_SAM(Adam)_ADV_Era3_OutSoftMax_5e5_div4_FZ_model_best.pth'
 PREPROCESSING:
   DATASET: FaceForensics
   SPLIT: train

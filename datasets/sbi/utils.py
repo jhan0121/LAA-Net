@@ -94,15 +94,23 @@ def gen_SBI(img, landmark):
     return img, img_blended, mask
 
 
-def gen_target(background_face, background_landmark, margin=[20, 20]):
+def gen_target(background_face, background_landmark, margin=[20, 20], lambda1=0.6, lambda2=0.4):
     if isinstance(background_face, str):
         background_face = load_image(background_face)
     
     margin_x, margin_y = margin
 
     background_face, face_img, mask_f = gen_SBI(background_face, background_landmark)
-    mask_f = (1 - mask_f) * mask_f * 4
+    mask_f = (1 - mask_f) * mask_f * 4 # Blending boundary mask
     mask_r = np.zeros((mask_f.shape[0], mask_f.shape[1], 1))
+    
+    # edge 계산 (Laplacian 필터)
+    laplacian = cv2.Laplacian(cv2.cvtColor(face_img, cv2.COLOR_RGB2GRAY), cv2.CV_32F, ksize=3)
+    laplacian = np.expand_dims(np.abs(laplacian), axis=-1)  # Laplacian 결과 차원 확장
+    
+    # Hybrid Mask 생성
+    mask_f = lambda1 * mask_f + lambda2 * laplacian
+    mask_f = cv2.normalize(mask_f, None, 0, 1, cv2.NORM_MINMAX)  # 정규화
     
     H, W = len(face_img), len(face_img[0])
     face_img = face_img[margin_y:(H-margin_y), margin_x:(W-margin_x), :]

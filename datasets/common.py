@@ -199,22 +199,31 @@ class CommonDataset(Dataset, ABC):
                         w_sbi, h_sbi = cal_mask_wh((j, i), target_mask[..., 0])
                         radius = gaussian_radius((h_sbi, w_sbi))
                         self.sigma = radius/3 + 1e-4
-                    tmp = self.sigma * 3
-                    size = tmp * 2 + 1
-                    ul = [int(i - tmp), int(j - tmp)]
-                    br = [int(i + tmp + 1), int(j + tmp + 1)]
-                    x = np.arange(0, size, 1, np.float32)
-                    y = x[:, np.newaxis]
-                    
-                    x0 = y0 = size // 2
-                    g = np.exp(-((x - x0) ** 2 + (y - y0) ** 2) / (2 * (self.sigma ** 2)))
-                    
-                    g_x = max(0, -ul[0]), min(br[0], hm_w) - ul[0]
-                    g_y = max(0, -ul[1]), min(br[1], hm_h) - ul[1]
-                    
-                    img_x = max(0, ul[0]), min(br[0], hm_w)
-                    img_y = max(0, ul[1]), min(br[1], hm_h)
-                    
+                    sigma_scales = [self.sigma, ]
+                    weights = [0.5, 0.3, 0.2]
+                    # tmp = self.sigma * 3
+                    for sigma, weight in zip(sigma_scales, weights):
+                        tmp = sigma * 3
+                        size = tmp * 2 + 1
+                        ul = [int(i - tmp), int(j - tmp)]
+                        br = [int(i + tmp + 1), int(j + tmp + 1)]
+                        x = np.arange(0, size, 1, np.float32)
+                        y = x[:, np.newaxis]
+                        
+                        x0 = y0 = size // 2
+                        g = np.exp(-((x - x0) ** 2 + (y - y0) ** 2) / (2 * (self.sigma ** 2)))
+                        
+                        g_x = max(0, -ul[0]), min(br[0], hm_w) - ul[0]
+                        g_y = max(0, -ul[1]), min(br[1], hm_h) - ul[1]
+                        
+                        img_x = max(0, ul[0]), min(br[0], hm_w)
+                        img_y = max(0, ul[1]), min(br[1], hm_h)
+                        
+                        # 가중 평균을 사용하여 Heatmap에 반영
+                        heatmap[0][img_y[0]:img_y[1], img_x[0]:img_x[1]] += (
+                            g[g_y[0]:g_y[1], g_x[0]:g_x[1]] * weight
+                        )
+                        
                     heatmap[0][img_y[0]:img_y[1], img_x[0]:img_x[1]] = np.maximum(
                         g[g_y[0]:g_y[1], g_x[0]:g_x[1]],
                         heatmap[0][img_y[0]:img_y[1], img_x[0]:img_x[1]])
@@ -247,22 +256,31 @@ class CommonDataset(Dataset, ABC):
                 w_sbi, h_sbi = cal_mask_wh((j, i), target_mask[..., 0])
                 radius = gaussian_radius((h_sbi, w_sbi))
                 self.sigma = radius/3 + 1e-4
-            tmp = self.sigma * 3
-            size = tmp * 2 + 1
-            ul = [int(i - tmp), int(j - tmp)]
-            br = [int(i + tmp + 1), int(j + tmp + 1)]
-            x = np.arange(0, size, 1, np.float32)
-            y = x[:, np.newaxis]
-            
-            x0 = y0 = size // 2
-            g = np.exp(-((x - x0) ** 2 + (y - y0) ** 2) / (2 * (self.sigma ** 2)))
-            
-            g_x = max(0, -ul[0]), min(br[0], hm_w) - ul[0]
-            g_y = max(0, -ul[1]), min(br[1], hm_h) - ul[1]
-            
-            img_x = max(0, ul[0]), min(br[0], hm_w)
-            img_y = max(0, ul[1]), min(br[1], hm_h)
-            
+                self.sigma_scales = [radius/3 + 1e-4, radius/2 + 1e-4, 2 * radius / 3 + 1e-4]
+            # tmp = self.sigma * 3
+            weights = [0.5, 0.3, 0.2]
+            for sigma, weight in zip(self.sigma_scales, weights):
+                tmp = sigma * 3
+                size = tmp * 2 + 1
+                ul = [int(i - tmp), int(j - tmp)]
+                br = [int(i + tmp + 1), int(j + tmp + 1)]
+                x = np.arange(0, size, 1, np.float32)
+                y = x[:, np.newaxis]
+                
+                x0 = y0 = size // 2
+                g = np.exp(-((x - x0) ** 2 + (y - y0) ** 2) / (2 * (sigma ** 2)))
+                
+                g_x = max(0, -ul[0]), min(br[0], hm_w) - ul[0]
+                g_y = max(0, -ul[1]), min(br[1], hm_h) - ul[1]
+                
+                img_x = max(0, ul[0]), min(br[0], hm_w)
+                img_y = max(0, ul[1]), min(br[1], hm_h)
+                
+                # 가중 평균을 사용하여 Heatmap에 반영
+                heatmap[0][img_y[0]:img_y[1], img_x[0]:img_x[1]] += (
+                    g[g_y[0]:g_y[1], g_x[0]:g_x[1]] * weight
+                )
+                
             heatmap[0][img_y[0]:img_y[1], img_x[0]:img_x[1]] = np.maximum(
                 g[g_y[0]:g_y[1], g_x[0]:g_x[1]],
                 heatmap[0][img_y[0]:img_y[1], img_x[0]:img_x[1]])
